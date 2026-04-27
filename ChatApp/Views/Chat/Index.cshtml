@@ -1,0 +1,327 @@
+﻿@model ContactModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat Application</title>
+<link rel="stylesheet" href="~/css/styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<!-- SignalR reference -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+<!-- Emoji Picker -->
+    <script src="https://cdn.jsdelivr.net/npm/emoji-picker-element&#64;^1/index.js" type="module"></script>
+</head>
+<body>
+<main class="app-container">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title-container">
+        <i data-lucide="users"></i>
+        <h2 class="sidebar-title">Contacts</h2>
+      </div>
+      <button class="icon-button" id="add-contact-btn">
+        <i data-lucide="plus"></i>
+      </button>
+    </div>
+    
+    <div class="search-container">
+      <div class="search-input-wrapper">
+        <i data-lucide="search" class="search-icon"></i>
+        <input type="text" id="search-input" placeholder="Search users..." class="search-input">
+      </div>
+    </div>
+    
+    <div class="sidebar-content">
+      <div class="sidebar-group">
+        <div class="sidebar-group-label">Recent Chats</div>
+        <div class="sidebar-group-content">
+          <ul class="user-list" id="user-list">
+            <!-- User list will be populated by JavaScript -->
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+    <div class="sidebar-footer">
+      <button class="sidebar-menu-button" id="settings-btn">
+        <i data-lucide="settings"></i>
+        <span>Settings</span>
+      </button>
+                <!-- New Group Button -->
+                <button id="groupchat-new-btn" class="sidebar-menu-button">
+                    <i data-lucide="contact-round"></i>
+                    <span>New Group</span>
+                </button>
+
+                <!-- Create Group Modal -->
+                <div id="groupchat-modal" class="groupchat-modal groupchat-hidden">
+                    <div class="groupchat-modal-content">
+                        <h3>Create New Group</h3>
+
+                        <input type="text" id="groupchat-name-input" placeholder="Enter group name..." />
+
+                        <div class="groupchat-contact-list" id="groupchat-contact-list">
+                            
+                        </div>
+                        <div id="groupchat-error" style="color: red; margin-top: 10px; display: none;"></div>
+                        <div class="groupchat-modal-actions">
+                            <button id="groupchat-cancel-btn">Cancel</button>
+                            <button id="groupchat-create-btn" class="groupchat-primary">Create</button>
+                        </div>
+                    </div>
+                </div>
+
+      <div class="sidebar-menu-button">
+        <i data-lucide="moon" class="theme-icon"></i>
+        <span>Theme</span>
+        <label class="theme-switch">
+          <input type="checkbox" id="theme-toggle">
+          <span class="slider"></span>
+        </label>
+      </div>
+                <form asp-controller="Account" asp-action="Logout" method="post" style="display: flex; align-items: center; border: none; background: none; padding: 7px; margin: 0;">
+                    <button type="submit" class="sidebar-menu-button" style="display: flex; align-items: center; gap: 5px; border: none; background: none; cursor: pointer; padding: 0;">
+                        <i data-lucide="log-out"></i>
+                        <span>Logout</span>
+                    </button>
+                </form>
+
+
+    </div>
+    
+    <!-- Add resize handle -->
+    <div class="sidebar-resize-handle" id="sidebar-resize-handle"></div>
+  </aside>
+
+  <!-- Main Chat Area -->
+  <div class="chat-container">
+    <div class="chat-wrapper">
+      <!-- Chat Header -->
+      <div class="chat-header">
+        <div class="chat-header-user">
+          <div class="avatar" id="chat-avatar">
+            <div class="avatar-content">
+                <img src="https://cdn-icons-png.flaticon.com/512/4712/4712100.png" alt="AI" />
+                </div>
+          </div>
+          <div class="chat-header-info">
+            <h2 class="chat-header-name" id="chat-name">AI Assistant</h2>
+            <div class="chat-header-typing" id="chat-header-typing" style="display: none;">
+              <span>typing</span>
+              <span class="chat-typing-dots">
+                <span class="chat-typing-dot"></span>
+                <span class="chat-typing-dot"></span>
+                <span class="chat-typing-dot"></span>
+              </span>
+            </div>
+            <p class="chat-header-status" id="chat-status">Always online</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Chat Messages -->
+      <div class="chat-messages" id="chat-messages">
+        <!-- Messages will be populated by JavaScript -->
+      </div>
+      <div id="voice-recording-ui" class="voice-recording-ui hidden">
+    <div class="recording-indicator"></div>
+    <span id="recording-timer">00:00</span>
+    <button class="icon-button" id="stop-recording">
+      <i data-lucide="square"></i>
+    </button>
+  </div>
+      <!-- Chat Input -->
+      <div class="chat-input-container">
+        <div class="chat-input-wrapper">
+            <button class="icon-button" id="btnPaperclip">
+            <i data-lucide="paperclip"></i>
+          </button>
+          <button class="icon-button" id="btnImage">
+            <i data-lucide="image"></i>
+          </button>
+          <div class="input-wrapper">
+            <input type="text" id="message-input" placeholder="Type a message..." class="message-input" dir="auto">
+            <button class="icon-button mic-button">
+              <i data-lucide="mic"></i>
+            </button>
+          </div>
+          <button class="icon-button emoji-button" id="emoji-button">
+            <i data-lucide="smile"></i>
+          </button>
+          <button class="send-button" id="send-button" disabled>
+            <i data-lucide="send"></i>
+          </button>
+        </div>
+        <!-- Emoji Picker Container -->
+        <div id="emoji-picker-container" class="emoji-picker-container">
+          <emoji-picker></emoji-picker>
+        </div>
+
+
+      </div>
+                <input type="file" id="file-input" accept="image/*,video/*" hidden>
+
+                <div id="file-preview-modal" class="file-preview-modal hidden">
+                    <div class="file-preview-content">
+                        <span class="close-btn" id="closeImagePreview">&times;</span>
+                        <div id="file-preview"></div>
+                        <button id="send-file-btn">SEND</button>
+                    </div>
+                </div>
+
+    </div>
+  </div>
+
+        <!-- Add Contact Modal -->
+        <div id="add-contact-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Add New Contact</h2>
+                    <button class="close-modal" id="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-contact-form">
+                        <div class="form-group">
+                            <label for="contact-name">Name</label>
+                            <input type="text" id="contact-name" required placeholder="Enter contact Username">
+
+                            <!-- Error message (initially hidden) -->
+                            <div id="username-error" class="validation-error validation-summary" style="display: block;">
+                                
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">Add Contact</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        
+
+  <!-- Settings Modal -->
+  <div id="settings-modal" class="modal">
+    <div class="modal-content settings-modal-content">
+      <div class="modal-header settings-header">
+        <div class="settings-header-left">
+          <button class="back-button" id="settings-back-button">
+            <i data-lucide="arrow-left"></i>
+          </button>
+          <h2>Settings</h2>
+        </div>
+        <div class="settings-header-right">
+        <button class="save-modal" id="settings-save-button">
+            <i data-lucide="save"></i>
+        </button>
+          <button class="edit-button" id="settings-edit-button">
+            <i data-lucide="edit-2"></i>
+          </button>
+          <button class="close-modal" id="close-settings-modal">&times;</button>
+
+
+        </div>
+      </div>
+      <div class="modal-body settings-body">
+        <div class="profile-section">
+          <div class="profile-picture-container">
+            <div class="profile-picture" id="profile-picture">
+              <!-- Profile picture will be set by JavaScript -->
+            </div>
+          </div>
+          
+          <div class="profile-info">
+            <div class="profile-name" id="profile-name"></div>
+            <div class="profile-status">online</div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-item">
+            <div class="settings-item-icon">
+              <i data-lucide="phone"></i>
+            </div>
+            <div class="settings-item-content">
+              <div class="settings-item-label">Phone</div>
+              <div class="settings-item-value" id="settings-phone"></div>
+            </div>
+          </div>
+          
+          <div class="settings-item">
+            <div class="settings-item-icon">
+              <i data-lucide="at-sign"></i>
+            </div>
+            <div class="settings-item-content">
+              <div class="settings-item-label">Username</div>
+              <div class="settings-item-value" id="settings-username"></div>
+            </div>
+          </div>
+          
+          <div class="settings-item">
+            <div class="settings-item-icon">
+              <i data-lucide="info"></i>
+            </div>
+            <div class="settings-item-content">
+              <div class="settings-item-label">Bio</div>
+              <div class="settings-item-value" id="settings-bio"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Profile Modal -->
+  <div id="edit-profile-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Edit Profile</h2>
+        <button class="close-modal" id="close-edit-profile-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="edit-profile-form" enctype="multipart/form-data">
+        <div class="profile-section">
+            <div class="profile-picture-container">
+                <div class="profile-picture" id="Edit-profile-picture">
+                </div>
+                    <div class="profile-picture-overlay" id="profile-picture-overlay">
+                <i data-lucide="camera"></i>
+                </div>
+                <input type="file" id="profile-picture-input" name="ProfilePicture" accept="image/*" style="display: none;">
+            </div>
+
+            <div class="profile-info">
+                <div class="profile-name" id="profile-name"></div>
+                <div class="profile-status">online</div>
+            </div>
+        </div>
+        <br/>
+          <div class="form-group">
+            <label for="edit-username">Username</label>
+            <input type="text" id="edit-username" name="Username" placeholder="Enter username">
+          </div>
+          <div class="form-group">
+            <label for="edit-phone">Phone Number</label>
+            <input type="text" id="edit-phone" name="Phone" placeholder="Enter phone number">
+          </div>
+          <div class="form-group">
+            <label for="edit-bio">Bio</label>
+            <textarea id="edit-bio" rows="3" name="Bio" placeholder="Enter bio"></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn-primary" id="save-profile">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="~/js/script.js"></script>
+</body>
+</html>

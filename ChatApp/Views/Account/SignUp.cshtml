@@ -1,0 +1,111 @@
+﻿@model RegisterModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - UniChat</title>
+    <link rel="stylesheet" href="~/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script type="module" src="auth.js"></script>
+
+</head>
+<body>
+    <main class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>Create an account</h1>
+                <p>Sign up to get started with UniChat</p>
+            </div>
+
+            <form asp-action="SignUp" asp-controller="Account" id="signUpForm" enctype="multipart/form-data" method="post" class="auth-form">
+                <div class="profile-upload">
+                    <div class="profile-picture">
+                        <div class="profile-picture-placeholder">
+                            <i data-lucide="user"></i>
+                        </div>
+                        <img id="profile-preview" class="hidden">
+                    </div>
+                    <div class="profile-picture-overlay">
+                        <i data-lucide="camera"></i>
+                    </div>
+                    <input asp-for="ProfilePicture" type="file" id="profile-picture-input" accept="image/*" style="display: none;" />
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="FullName">Full Name</label>
+                    <div class="input-with-icon">
+                        <i data-lucide="user" class="input-icon"></i>
+                        <input asp-for="FullName" class="form-control" placeholder="John Doe" />
+                    </div>
+                    <span asp-validation-for="FullName" class="validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Email">Email</label>
+                    <div class="input-with-icon">
+                        <i data-lucide="mail" class="input-icon"></i>
+                        <input asp-for="Email" class="form-control" placeholder="name@example.com" />
+                    </div>
+                    <span asp-validation-for="Email" class="validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="PhoneNumber">Phone Number</label>
+                    <div class="phone-input-container">
+                        <input asp-for="PhoneNumber" class="form-control" placeholder="+98 ___ ___ ____" />
+                    </div>
+                    <span asp-validation-for="PhoneNumber" class="validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Password">Password</label>
+                    <div class="input-with-icon password-input">
+                        <i data-lucide="lock" class="input-icon"></i>
+                        <input asp-for="Password" class="form-control" type="password" placeholder="••••••••" />
+                        <button type="button" class="password-toggle">
+                            <i data-lucide="eye" class="toggle-icon show-password"></i>
+                            <i data-lucide="eye-off" class="toggle-icon hide-password hidden"></i>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Password" class="validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="ConfirmPassword">Confirm Password</label>
+                    <div class="input-with-icon">
+                        <i data-lucide="lock" class="input-icon"></i>
+                        <input asp-for="ConfirmPassword" class="form-control" type="password" placeholder="••••••••" />
+                    </div>
+                    <span asp-validation-for="ConfirmPassword" class="validation-error"></span>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <input asp-for="HasAcceptedTerms" type="checkbox" />
+                    <label asp-for="HasAcceptedTerms">
+                        I agree to the <a href="#">terms and conditions</a>
+                    </label>
+                    <span asp-validation-for="HasAcceptedTerms" class="validation-error"></span>
+                </div>
+                <div asp-validation-summary="ModelOnly" class="validation-error"></div>
+                <input type="hidden" id="publicKey" name="PublicKey" />
+                <button type="submit" class="btn-primary">
+                    <span>Create account</span>
+                    <i data-lucide="arrow-right"></i>
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Already have an account? <a asp-action="Login" asp-controller="Account">Sign In</a> </p>
+            </div>
+        </div>
+    </main>
+
+    <script src="~/js/auth.js" type="module"></script>
+</body>
+</html>

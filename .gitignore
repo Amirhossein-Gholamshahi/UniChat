@@ -427,3 +427,7 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+# Ignore the MyAppFolder and its contents
+ChatApp/wwwroot/uploads/*
+!ChatApp/wwwroot/uploads/gitkeep.txt
+appsettings.json
