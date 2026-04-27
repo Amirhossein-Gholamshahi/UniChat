@@ -23,7 +23,7 @@ This is a real-time chat application built using **ASP.NET MVC** and **SignalR**
 ## Demo
 
 <p >
-<img src="https://github.com/Amirhossein-Gholamshahi/UniChat/blob/main/ChatApp/assets/Demo.gif"  width="500"/> 
+<img src="https://github.com/Amirhossein-Gholamshahi/UniChat/blob/main/ChatApp/assets/Demo.gif"  style="max-width: 100%;"  width="500"/> 
 </p>
 
 
