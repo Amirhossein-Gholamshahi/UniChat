@@ -21,7 +21,10 @@ This is a real-time chat application built using **ASP.NET MVC** and **SignalR**
 *   **Database:**
     *   (Specify your database: e.g., SQL Server, PostgreSQL, SQLite, In-memory for development)
 ## Demo
-![Demo of my project](assets/Demo.gif)
+<p align="center">
+  <img src="assets/Demo.gif" alt="Demo of my project" width="600"/>
+</center>
+
 
 
 ## Getting Started
