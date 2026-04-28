@@ -1507,6 +1507,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
     function showAiThinking() {
+        document.getElementById("message-input").disabled = true;
+
         const chatContainer = document.querySelector(".chat-messages"); // your message area container
 
         // Remove old thinking bubble if any (optional)
@@ -1533,6 +1535,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     function hideAiThinking() {
+        document.getElementById("message-input").disabled = false;
+
         const bubble = document.querySelector(".thinking-bubble");
         if (bubble) bubble.remove();
     }

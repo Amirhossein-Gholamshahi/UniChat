@@ -204,7 +204,7 @@ namespace ChatApp.Hubs
 				var messages = await _messageRepository.FindListWithIncludesAsync
 								(m => m.SenderId == currentTargetUser.UserId && m.ReceiverId == currentCustomUser.UserId && !m.IsSeen);
 				messages.ToList().ForEach(m => m.IsSeen = true);
-				_messageRepository.SaveChangesAsync();
+				await _messageRepository.SaveChangesAsync();
 
 
 			}
