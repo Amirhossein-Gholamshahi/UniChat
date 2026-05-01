@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using ChatApp.Repositories;
 using ChatApp.Services;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.FileProviders;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -68,6 +69,14 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+var env = app.Environment;
+
+app.UseStaticFiles(new StaticFileOptions
+{
+	FileProvider = new PhysicalFileProvider(
+		Path.Combine(env.ContentRootPath, "assets")),
+	RequestPath = "/assets"
+});
 
 app.UseDefaultFiles(); 
 

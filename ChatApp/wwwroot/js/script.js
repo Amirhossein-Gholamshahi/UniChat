@@ -1404,7 +1404,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         else {
             decryptedMessage = await decryptMessage(message);
         }
-
         // If the sender is AI and the last message is also from AI,
         // append to that message instead of pushing a new one
         // wait 3 seconds before showing this chunk
@@ -1432,11 +1431,13 @@ document.addEventListener("DOMContentLoaded", async () => {
             isGroup: groupId && groupId != "",
             realSenderId: realSenderId
         }
+        const senderUser = users.find((u) => u.id === senderId)
+        showNotification(receivedMessage.messageTypeId != 1 ? "🖼️" : decryptedMessage, senderUser.name);
+
         messages.push(receivedMessage)
         renderMessages()
 
         // Update last message for the user
-        const senderUser = users.find((u) => u.id === senderId)
         const selectedUser = users.find((u) => u.isActiveChat == true)
         if (senderUser) {
             senderUser.lastMessage = receivedMessage.messageTypeId != 1 ? "🖼️" : decryptedMessage;
@@ -1475,6 +1476,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         .then(() => {
             console.log("Connected to SignalR")
             connection.invoke("RegisterUserId")
+            if ("Notification" in window) {
+                Notification.requestPermission().then((perm) => {
+                    if (perm === "granted") {
+                        console.log("Desktop notifications enabled");
+                    }
+                });
+            }
+
         })
         .catch((err) => console.error("Connection failed:", err))
 
@@ -1851,6 +1860,25 @@ document.addEventListener("DOMContentLoaded", async () => {
         return new TextDecoder().decode(decrypted);
     }
 
+    function showNotification(message, contactName) {
+        debugger;
+        if (!("Notification" in window)) return;
+
+        if (Notification.permission === "granted") {
+
+            const n = new Notification(contactName, {
+                body: message,
+                icon: "/assets/NotificationBell.png", 
+                badge: "/assets/NotificationBell.png",
+                timestamp: Date.now()
+            });
+
+            n.onclick = () => {
+                window.focus();
+                n.close();
+            };
+        }
+    }
 
 
     // Handle typing notifications
